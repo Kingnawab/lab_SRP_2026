@@ -6,8 +6,6 @@
  * Goal: overwrite the saved return address, land in a NOP sled (\x90),
  * slide into the provided shellcode (shellcode.py), and get a root shell.
  *
- * Why a sled? Your landing address in the buffer can be slightly wrong;
- * NOPs give you a runway so you still reach the shellcode.
  */
 
 #include <stdio.h>
