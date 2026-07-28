@@ -9,14 +9,13 @@
 .idea/
 *.iml
 
-# Instructor-only / local solve scripts (keep private if distributing)
+# Instructor-only / local solve scripts (keep private)
 **/SOLUTION.md
 **/solution.py
 **/solve.py
 
-# Starter shellcode for Level 2 MUST be shipped to students
-!**/shellcode.py
+# Per-level student docs kept local for now (main README is published)
+level*/README.md
 
-# Student/instructor docs kept locally for now; re-add when ready
-README.md
-**/README.md
+# Local packaging artifact (host on Canvas / GitHub Release instead)
+cse29-lab-starter.tar.gz
