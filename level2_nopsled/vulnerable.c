@@ -49,7 +49,7 @@ void vulnerable(void) {
     char buffer[128];
 
     /* Deliberate address leak so students can aim the return address
-     * without needing live GDB (useful under Docker emulation). */
+     * at their NOP sled (also useful before they are fluent in GDB). */
     printf(COLOR_DIM "  [leak] buffer @ %p\n" COLOR_RESET, (void *)buffer);
     printf(COLOR_MAGENTA_BOLD "  root@cse29:~# " COLOR_RESET
            "enter exploit payload: ");

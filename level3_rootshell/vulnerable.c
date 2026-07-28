@@ -7,9 +7,8 @@
  * root_shell(), which drops you into /bin/sh.
  *
  * No shellcode and no executable stack required — this is return-to-function
- * (ret2win style). In the course Docker image you are already root, so the
- * shell is a root shell. On a hardened course server this binary would be
- * installed setuid-root carefully; here the lesson is control-flow hijack.
+ * (ret2win style). On the lab VM you may already be root, so the shell is a
+ * root shell. The lesson is control-flow hijack, not privilege escalation.
  */
 
 #include <stdio.h>

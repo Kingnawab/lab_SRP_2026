@@ -9,7 +9,7 @@
 .idea/
 *.iml
 
-# Instructor-only (keep private if distributing to students)
+# Instructor-only / local solve scripts (keep private if distributing)
 **/SOLUTION.md
 **/solution.py
 **/solve.py
