@@ -21,7 +21,7 @@
 
 void professor_mode(void) {
     printf(COLOR_GREEN_BOLD
-           "\n  Logged in as : Professor Gerald Soosairaj\n"
+           "\n  Logged in as : professor\n"
            "  *** ROLE ELEVATED :: CONTROL FLOW HIJACKED ***\n"
            "  *** LEVEL 2 CLEARED ***\n" COLOR_RESET);
     exit(0);
