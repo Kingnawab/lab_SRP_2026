@@ -66,8 +66,9 @@ With the VM running, open a terminal **inside the VM** (or SSH in) and run:
 
 ```bash
 cd ~
-wget -O cse29-lab-starter.tar.gz 'https://github.com/Kingnawab/lab_SRP_2026/releases/latest/download/cse29-lab-starter.tar.gz'
-tar -xf cse29-lab-starter.tar.gz
+wget -O cse29-lab.tar.gz https://github.com/Kingnawab/lab_SRP_2026/archive/refs/tags/v0.1.0.tar.gz
+tar -xf cse29-lab.tar.gz
+mv lab_SRP_2026-0.1.0 cse29-lab
 cd cse29-lab
 ls
 ```
@@ -89,9 +90,8 @@ file vulnerable
 
 **Read the compiler warnings** when you `make` — that is part of the lab.
 
-*(Instructor: that release URL only works after the repo is **public** and you
-upload `cse29-lab-starter.tar.gz` to a GitHub Release — see below. Until then,
-host the same file on Canvas and give students that link instead.)*
+**Starter download link:**  
+https://github.com/Kingnawab/lab_SRP_2026/archive/refs/tags/v0.1.0.tar.gz
 
 ---
 
@@ -113,14 +113,12 @@ successful Level 3 exploit (on the course VM, Level 3 is set up as setuid-root).
 1. Build a 32-bit Debian (i386) VM; create user `cse29` / `cse29`.
 2. Install `build-essential`, `gdb`, `python3`, `wget`, `openssh-server`.
 3. Disable ASLR: `kernel.randomize_va_space = 0` (sysctl.d).
-4. **Host the starter tarball** (required for student `wget`):
-   - Make `lab_SRP_2026` **public**, create a Release named e.g. `v0.1.0`,
-     upload `cse29-lab-starter.tar.gz` as a release asset, **or**
-   - Upload `cse29-lab-starter.tar.gz` to Canvas / campus web hosting and put
-     that URL in the student `wget` line above.
-5. On the image, after students (or you) build Level 3: run `setup-perms.sh`
-   so only Level 3 `vulnerable` is setuid-root.
+4. Students fetch starter code with `wget` from the `v0.1.0` tag archive
+   (link above). When you change the lab, cut a new tag (e.g. `v0.2.0`) and
+   update the student `wget` URL.
+5. On the course VM image, after Level 3 is built: run `setup-perms.sh` so only
+   Level 3 `vulnerable` is setuid-root.
 6. Port forward: VirtualBox host `2222` → guest `22`; document UTM as port `22`.
 7. Export `.ova` / `.utm.zip` and post download links on Canvas.
 
-Keep `SOLUTION.md` / `solution.py` out of the tarball and out of the public repo.
+Keep `SOLUTION.md` / `solution.py` out of the public repo.
