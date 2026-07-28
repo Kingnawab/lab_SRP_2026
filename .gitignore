@@ -1,0 +1,15 @@
+# Build artifacts
+**/vulnerable
+**/target0
+*.o
+*.out
+
+# OS / IDE
+.DS_Store
+.idea/
+*.iml
+
+# Instructor-only (keep private if distributing to students)
+**/SOLUTION.md
+**/solution.py
+**/solve.py
