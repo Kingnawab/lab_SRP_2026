@@ -1,7 +1,7 @@
-# CSE 29 Buffer Overflow Lab (SRP 2026)
+# CSE 29 Buffer Overflow Lab (SRP 2026/future conference paper)
 
-Hands-on levels that teach stack layout, GDB, and crafting overflow payloads
-on a **native 32-bit (i386) Linux VM** in UTM.
+Our goal is to  teach stack layout, GDB, and creating overflow payloads
+on a **native 32-bit (i386) Linux VM** in UTM. This was decided so students would have a Linux OS that they could run various GDB commands.
 
 | Level | Folder | Idea |
 |-------|--------|------|
@@ -9,15 +9,15 @@ on a **native 32-bit (i386) Linux VM** in UTM.
 | 2 | `level2_nopsled/` | NOP sled + shellcode → call `win()` |
 | 3 | `level3_rootshell/` | Overwrite return address → `root_shell()` → `/bin/sh` |
 
-These labs disable common protections **on purpose** so the lecture model
-matches what you see in GDB. Real systems leave those protections on.
+These labs disable all protections **on purpose** so the lecture slide deck
+matches what you see in GDB. **We will explain that real systems leave those protections on**.
 
 ---
 
 ## 1. Create the 32-bit VM (UTM)
 
 1. Install [UTM](https://mac.getutm.app/).
-2. Download a **32-bit** Debian ISO (Ubuntu 22.04 is 64-bit only):  
+2. Download a **32-bit** Debian ISO:  
    https://cdimage.debian.org/debian-cd/current/i386/iso-cd/  
    (use the `netinst` ISO).
 3. In UTM: **Create a New Virtual Machine** → **Emulate** → **Linux**.
@@ -41,10 +41,6 @@ getconf LONG_BIT
 sudo apt update
 sudo apt install -y build-essential gdb python3 git
 ```
-
-You do **not** need `gcc-multilib` or `libc6:i386` — the whole OS is already
-32-bit.
-
 ---
 
 ## 3. Turn off ASLR (for this lab VM)
@@ -151,7 +147,7 @@ Shared across levels (see each `Makefile` for exact lines):
 
 ---
 
-## Quick smoke test (Level 1)
+## Quick test (Level 1)
 
 ```bash
 cd level1_grade
