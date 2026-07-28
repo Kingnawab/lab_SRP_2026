@@ -16,3 +16,7 @@
 
 # Starter shellcode for Level 2 MUST be shipped to students
 !**/shellcode.py
+
+# Student/instructor docs kept locally for now; re-add when ready
+README.md
+**/README.md
