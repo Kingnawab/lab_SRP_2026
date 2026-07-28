@@ -13,3 +13,6 @@
 **/SOLUTION.md
 **/solution.py
 **/solve.py
+
+# Starter shellcode for Level 2 MUST be shipped to students
+!**/shellcode.py

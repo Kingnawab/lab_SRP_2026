@@ -5,14 +5,16 @@ you never put code on the stack. You overwrite the **saved return address**
 with the address of an existing function, `root_shell()`, which runs
 `system("/bin/sh")`.
 
-**Win condition:** you get a shell prompt, and you saw
+**Win condition:** you get a shell where `id` shows `uid=0(root)`, after seeing
 
 ```text
 *** ACCESS GRANTED :: SPAWNING ROOT SHELL ***
 *** LEVEL 3 CLEARED ***
 ```
 
-Type `id` or `whoami` in the shell, then `exit` when done.
+Before the attack, `id` should show your normal student user — not root.
+On the course VM this binary is **setuid-root**; that is why jumping to
+`root_shell()` can escalate. Logging into the VM does **not** make you root.
 
 You do **not** edit `vulnerable.c`. You craft the input payload.
 

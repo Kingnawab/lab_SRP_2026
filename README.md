@@ -1,140 +1,91 @@
-# CSE 29 Buffer Overflow Lab (SRP 2026/future conference paper)
+# CSE 29 Buffer Overflow Lab (SRP 2026)
 
-Our goal is to  teach stack layout, GDB, and creating overflow payloads
-on a **native 32-bit (i386) Linux VM** in UTM. This was decided so students would have a Linux OS that they could run various GDB commands.
+Hands-on levels that teach stack layout, GDB, and crafting overflow payloads
+on a **native 32-bit (i386) Linux VM** in UTM.
 
 | Level | Folder | Idea |
 |-------|--------|------|
-| 1 | `level1_grade/` | Overflow a buffer to overwrite a neighboring variable (grade → A+) |
-| 2 | `level2_nopsled/` | NOP sled + shellcode → call `win()` |
-| 3 | `level3_rootshell/` | Overwrite return address → `root_shell()` → `/bin/sh` |
+| 1 | `level1_grade/` | Overflow a neighbor variable (grade → A+) — no root |
+| 2 | `level2_nopsled/` | NOP sled + `shellcode.py` (`setuid` + `/bin/sh`) → **root shell** |
+| 3 | `level3_rootshell/` | Return-to-`root_shell()` → **root shell** (no injected shellcode) |
 
-These labs disable all protections **on purpose** so the lecture slide deck
-matches what you see in GDB. **We will explain that real systems leave those protections on**.
+**Teaching rule:** students log into the VM as a **normal user**. They only
+get a root shell **after** a successful Level 2 or Level 3 exploit.
+
+These labs disable common memory protections **on purpose** so the lecture
+model matches GDB. Real systems leave those protections on.
+
+**Students do not clone this repo.** They receive a ready-made UTM VM with
+starter code already on disk. This GitHub repo is for instructors who build
+that image.
 
 ---
 
-## 1. Create the 32-bit VM (UTM)
+## For students — start here
 
 1. Install [UTM](https://mac.getutm.app/).
-2. Download a **32-bit** Debian ISO:  
-   https://cdimage.debian.org/debian-cd/current/i386/iso-cd/  
-   (use the `netinst` ISO).
-3. In UTM: **Create a New Virtual Machine** → **Emulate** → **Linux**.
-4. Select the i386 Debian ISO.
-5. Give the VM enough RAM (e.g. 2 GB) and finish the Debian install.
-6. After reboot, confirm you are on 32-bit:
+2. Open the course **CSE 29 lab VM** (`.utm` from Canvas / instructor — not GitHub).
+3. Log in with the **student** account your instructor gives you  
+   (`id` should **not** say `uid=0(root)`).
+4. Confirm 32-bit:
 
 ```bash
-uname -m
-# expect: i686
-
-getconf LONG_BIT
-# expect: 32
+uname -m          # expect: i686
+getconf LONG_BIT  # expect: 32
+id                # expect: uid=....(student)  — NOT root
 ```
 
----
-
-## 2. Install tools
+5. Lab files are already on disk:
 
 ```bash
-sudo apt update
-sudo apt install -y build-essential gdb python3 git
-```
----
-
-## 3. Turn off ASLR (for this lab VM)
-
-```bash
-sudo sysctl -w kernel.randomize_va_space=0
+cd ~/cse29-lab
+ls
+./check-env.sh
 ```
 
-Check:
+6. ASLR should already be off. If not, ask your instructor (do not expect
+   unrestricted root on the VM).
 
-```bash
-cat /proc/sys/kernel/randomize_va_space
-# expect: 0
-```
-
-This resets on reboot unless you make it permanent:
-
-```bash
-echo 'kernel.randomize_va_space = 0' | sudo tee /etc/sysctl.d/99-cse29-lab.conf
-sudo sysctl --system
-```
-
----
-
-## 4. Get the lab files
-
-Inside the VM:
-
-```bash
-git clone https://github.com/Kingnawab/lab_SRP_2026.git
-cd lab_SRP_2026
-```
-
-(Or use a UTM shared directory / `scp` if you prefer not to clone.)
-
----
-
-## 5. Build a level and verify the binary
+7. Play Level 1 first (no root involved):
 
 ```bash
 cd level1_grade
 make
+file vulnerable    # ELF 32-bit ... Intel 80386
+./vulnerable
 ```
 
-**Read the compiler warnings.** They are intentional (especially about
-`gets`). Do not hide them; they are part of the lesson.
+**Read compiler warnings** — especially about `gets`.
 
-Then:
+Levels 2–3: follow each folder’s `README.md`. Before exploiting, run `id`.
+After a successful exploit shell, run `id` again — you want `uid=0(root)`.
 
-```bash
-file vulnerable
-```
+---
 
-You must see something like:
+## How Level 2 shellcode relates (big picture)
 
 ```text
-ELF 32-bit LSB executable, Intel 80386, ...
+YOU (student user)
+    |
+    |  run setuid-root binary ./vulnerable
+    v
+process has root privileges available
+    |
+    |  your overflow jumps into NOP sled → shellcode
+    v
+shellcode part 1: setuid(0)     → "I am root"
+shellcode part 2: execve(/bin/sh) → "give me a shell"
+    |
+    v
+ROOT SHELL   ← only because the attack worked
 ```
 
-If it says `x86-64` / `ARM`, you are on the wrong VM architecture.
-
-Optional check script from the repo root:
-
-```bash
-./check-env.sh
-```
+Level 3 skips injected shellcode: you overwrite the return address so the
+program jumps into a function that already calls `setuid(0)` + `/bin/sh`.
 
 ---
 
-## 6. Play
-
-Follow each level’s `README.md`:
-
-```bash
-cd level1_grade    # then make, gdb, craft payload
-cd ../level2_nopsled
-cd ../level3_rootshell
-```
-
-Typical payload pattern:
-
-```bash
-python3 solve.py | ./vulnerable
-# or a one-liner from the level README
-```
-
-On this VM, **live GDB works** (`break`, `run`, `next`, `print`, …) because
-you have a real 32-bit Linux kernel — not an emulator syscall layer.
-
----
-
-## Makefile flags (what they mean)
-
-Shared across levels (see each `Makefile` for exact lines):
+## Makefile flags
 
 | Flag | Purpose |
 |------|---------|
@@ -147,15 +98,43 @@ Shared across levels (see each `Makefile` for exact lines):
 
 ---
 
-## Quick test (Level 1)
+## For instructors — VM build checklist
+
+1. UTM → **Emulate** → Linux → **Debian i386** netinst  
+   https://cdimage.debian.org/debian-cd/current/i386/iso-cd/
+2. Create a **non-root** user (e.g. `cse29`). Do **not** hand out the root
+   password to students.
+3. Install: `build-essential`, `gdb`, `python3` (optional: `openssh-server`).
+4. Disable ASLR permanently:
 
 ```bash
-cd level1_grade
-make
-file vulnerable
-./vulnerable
-# try a short name (grade stays D), then a long overflow / python payload
+echo 'kernel.randomize_va_space = 0' | sudo tee /etc/sysctl.d/99-cse29-lab.conf
+sudo sysctl --system
 ```
 
-When Level 1 prints `*** LEVEL 1 CLEARED ***`, your VM setup is good enough
-to continue.
+5. Copy the lab tree to `~cse29/cse29-lab/` (no `SOLUTION.md` / answer scripts).
+6. As root, build and mark exploit binaries setuid-root:
+
+```bash
+cd ~cse29/cse29-lab/level2_nopsled && make
+cd ~cse29/cse29-lab/level3_rootshell && make
+cd ~cse29/cse29-lab
+sudo ./setup-perms.sh
+```
+
+   Level 1 must **not** be setuid.
+
+7. Verify the story:
+
+```bash
+su - cse29
+id                          # not root
+cd ~/cse29-lab/level2_nopsled
+ls -l vulnerable            # should show -rwsr-xr-x root root
+```
+
+8. Export the `.utm` for class. Tell students: open VM → login as student →
+   `cd ~/cse29-lab` — no git clone.
+
+**Note:** if someone runs `make` again, the new binary loses setuid. Either
+forbid rebuilds on the shipped binaries, or let TAs re-run `setup-perms.sh`.
