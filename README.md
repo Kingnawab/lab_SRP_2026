@@ -22,8 +22,8 @@ Download the file that matches your computer from **Canvas** (course Files / lab
 
 *(Instructors: upload those two files to Canvas and replace any placeholder links below.)*
 
-- Canvas (OVA): *(paste Canvas URL for `CSE29-Overflow-Lab.ova`)*
-- Canvas (UTM zip): *(paste Canvas URL for `CSE29-Overflow-Lab-utm.zip`)*
+- *(paste Canvas URL for `CSE29-Overflow-Lab.ova`)*
+- *(paste Canvas URL for `CSE29-Overflow-Lab-utm.zip`)*
 
 Instructors: the built images live in the research repo under `labs/vm-build/` until uploaded to Canvas.
 
