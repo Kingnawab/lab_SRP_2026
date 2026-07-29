@@ -46,7 +46,6 @@ sleep 0.2
 printf '%s' "$COLOR_CYAN"
 type_out "  MISSION: overwrite the return address into a NOP sled (\\x90)."
 type_out "  Slide into shellcode.py (setuid + /bin/sh) and get a root shell."
-type_out "  Try two different landings in the sled — both should work."
 printf '%s\n' "$COLOR_RESET"
 
 printf '%s' "$COLOR_DIM"

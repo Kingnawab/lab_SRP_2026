@@ -45,8 +45,6 @@ sleep 0.2
 
 printf '%s' "$COLOR_CYAN"
 type_out "  MISSION: overwrite the return address with professor_mode()."
-type_out "  Exact address — no NOP sled, no shellcode."
-type_out "  Win when the program prints 'professor' instead of returning to main."
 printf '%s\n' "$COLOR_RESET"
 
 printf '%s' "$COLOR_DIM"

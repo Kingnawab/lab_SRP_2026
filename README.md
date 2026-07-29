@@ -118,9 +118,9 @@ Only if your instructor says to re-download (e.g. after a mid-quarter patch):
 
 ```bash
 cd ~
-wget -O cse29-lab.tar.gz https://github.com/Kingnawab/lab_SRP_2026/archive/refs/tags/v0.1.4.tar.gz
+wget -O cse29-lab.tar.gz https://github.com/Kingnawab/lab_SRP_2026/archive/refs/tags/v0.1.5.tar.gz
 tar -xf cse29-lab.tar.gz
-mv lab_SRP_2026-0.1.4 cse29-lab
+mv lab_SRP_2026-0.1.5 cse29-lab
 cd cse29-lab
 ```
 
