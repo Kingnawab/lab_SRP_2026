@@ -4,7 +4,7 @@ Three levels of 32-bit buffer-overflow exploitation in a dedicated lab VM (ASLR 
 
 ## Get the VM
 
-1. Download **`CSE29-Overflow-Lab-utm.zip`** from Canvas (TODO: Canvas link) or your instructor's shared drive.
+1. Get **`CSE29-Overflow-Lab-utm.zip`** from the shared Drive (or from Nawab).
 2. Install [UTM](https://mac.getutm.app/) on your Mac.
 3. Unzip → open the `.utm` in UTM (or double-click it) → **Start**.
 4. Log in: **`cse29`** / **`cse29`**.
