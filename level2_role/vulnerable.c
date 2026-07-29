@@ -53,12 +53,12 @@ void vulnerable(void) {
     printf(COLOR_DIM "  [hint] professor_mode @ %p\n" COLOR_RESET,
            (void *)professor_mode);
     gets(buffer); /* intentionally unsafe */
+    printf(COLOR_DIM "\n  still 'student'. return address was not hijacked.\n"
+           COLOR_RESET);
 }
 
 int main(void) {
     banner();
     vulnerable();
-    printf(COLOR_DIM "\n  still 'student'. return address was not hijacked.\n"
-           COLOR_RESET);
     return 0;
 }
