@@ -8,24 +8,8 @@
 #include <stdio.h>
 #define COLOR_GREEN_BOLD   "\033[1;32m"
 #define COLOR_MAGENTA_BOLD "\033[1;35m"
-#define COLOR_CYAN         "\033[0;36m"
 #define COLOR_DIM          "\033[2m"
 #define COLOR_RESET        "\033[0m"
-
-static void banner(void) {
-    printf(COLOR_GREEN_BOLD
-    "   ____ ____  _____   ____   ___    _   _    _    ____ _  __\n"
-    "  / ___/ ___|| ____| |___ \\ / _ \\  | | | |  / \\  / ___| |/ /\n"
-    " | |   \\___ \\|  _|     __) | (_) | | |_| | / _ \\| |   | ' / \n"
-    " | |___ ___) | |___   / __/ \\__, | |  _  |/ ___ \\ |___| . \\ \n"
-    "  \\____|____/|_____| |_____|  /_/  |_| |_/_/   \\_\\____|_|\\_\\\n"
-    COLOR_RESET);
-    printf(COLOR_MAGENTA_BOLD "        [ CSE 29 :: GRADE OVERRIDE TERMINAL ]\n\n" COLOR_RESET);
-    printf(COLOR_CYAN
-    "  Your grade is locked at 'D'. Overflow the handle buffer, spill\n"
-    "  into the grade field, and set yourself an 'A+'.\n" COLOR_RESET);
-    printf(COLOR_DIM "  ---------------------------------------------------------\n" COLOR_RESET);
-}
 
 typedef struct {
     char name[16];
@@ -38,7 +22,7 @@ int main(void) {
     student.grade[0] = 'D';
     student.grade[1] = '\0';
 
-    banner();
+    printf("  grade  : %s\n", student.grade);
     printf(COLOR_MAGENTA_BOLD "  root@cse29:~# " COLOR_RESET "enter your ucsd email without the @: ");
     fflush(stdout);
     gets(student.name); /* depricated function */
