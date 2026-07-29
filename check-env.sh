@@ -23,8 +23,8 @@ command -v make && make --version | head -1
 
 echo
 echo "== expected =="
-echo "uname -m:          i686 (or similar 32-bit)"
-echo "LONG_BIT:          32"
-echo "randomize_va_space: 0  (run: sudo sysctl -w kernel.randomize_va_space=0)"
+echo "uname -m:          x86_64 (amd64 guest; labs build with gcc -m32)"
+echo "LONG_BIT:          64 (host process bitness); vulnerable should be ELF 32-bit"
+echo "randomize_va_space: 0"
 echo
 echo "Then: cd level1_grade && make && file vulnerable"

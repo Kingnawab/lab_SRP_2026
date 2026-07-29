@@ -2,12 +2,13 @@
 #
 # READ THE COMPILER WARNINGS. We do not silence them (-Wall -Wextra on).
 #
+#   -m32                 : 32-bit ELF on the course amd64 lab VM
 #   -fno-stack-protector : no canaries
 #   -z execstack         : allow NOP sled + shellcode on the stack
 #   -no-pie -O0 -g
 
 CC      = gcc
-CFLAGS  = -Wall -Wextra -fno-stack-protector -z execstack -no-pie -O0 -g
+CFLAGS  = -m32 -Wall -Wextra -fno-stack-protector -z execstack -no-pie -O0 -g
 TARGET  = vulnerable
 
 .PHONY: all check clean

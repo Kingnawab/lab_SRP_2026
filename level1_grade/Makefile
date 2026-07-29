@@ -1,9 +1,7 @@
-# CSE 29 Level 1 — build on a native 32-bit (i386) Linux VM.
-#
-# Guest OS should already be 32-bit, so plain gcc produces an i386 ELF
-# (no -m32 / multilib needed).
+# CSE 29 Level 1 — 32-bit ELF on the course lab VM (x86_64 Ubuntu + -m32).
 #
 # Flags (read the compiler output — we intentionally do NOT silence warnings):
+#   -m32                 : 32-bit ELF (needs gcc-multilib / i386 libs on amd64)
 #   -Wall -Wextra        : surface warnings students should learn to read
 #   -fno-stack-protector : no stack canaries (overflows match lecture model)
 #   -no-pie              : fixed load address (less address churn)
@@ -13,7 +11,7 @@
 # Level 1 does NOT need -z execstack (no injected shellcode).
 
 CC      = gcc
-CFLAGS  = -Wall -Wextra -fno-stack-protector -no-pie -O0 -g
+CFLAGS  = -m32 -Wall -Wextra -fno-stack-protector -no-pie -O0 -g
 TARGET  = vulnerable
 
 .PHONY: all check clean

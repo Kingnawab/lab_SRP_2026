@@ -11,18 +11,39 @@ your computer before you need it.
 
 ## Setup
 
-### Download and run the VM
+### 1. Download the VM image
 
-Download the appropriate VM image for your platform and run it.
+Download the file that matches your computer from **Canvas** (course Files / lab page):
 
-- **Windows, Linux, and Intel Macs:** Download the `.ova` file and import it
-  into [VirtualBox](https://www.virtualbox.org/).
-- **M1/M2/M3 or Intel Mac users:** Download the `.zip` to get a UTM file and
-  use [UTM](https://mac.getutm.app/) to open it.
+| Your computer | Download this file | Open with |
+|---------------|--------------------|-----------|
+| **Windows, Linux, or Intel Mac** | **`CSE29-Overflow-Lab.ova`** | [VirtualBox](https://www.virtualbox.org/) → File → Import Appliance |
+| **Apple Silicon Mac** (M1/M2/M3/…) | **`CSE29-Overflow-Lab-utm.zip`** | Unzip, then open the `.utm` in [UTM](https://mac.getutm.app/) |
 
-*(Links will be posted on Canvas / the course site.)*
+*(Instructors: upload those two files to Canvas and replace any placeholder links below.)*
+
+- Canvas (OVA): *(paste Canvas URL for `CSE29-Overflow-Lab.ova`)*
+- Canvas (UTM zip): *(paste Canvas URL for `CSE29-Overflow-Lab-utm.zip`)*
+
+Instructors: the built images live in the research repo under `labs/vm-build/` until uploaded to Canvas.
+
+### 2. Log in
 
 The username and password are both **`cse29`**.
+
+You are a **normal user**. A root shell appears only after you successfully
+complete the Level 3 exploit.
+
+### 3. Go to the lab
+
+The starter code is already on the VM:
+
+```bash
+cd ~/cse29-lab
+ls
+# level1_grade/  level2_role/  level3_nopsled/  check-env.sh  ...
+./check-env.sh
+```
 
 ### SSH and copying files (optional)
 
@@ -38,7 +59,7 @@ You can use `scp` to copy files into or out of the VM:
 scp -P 2222 -r /path/to/files/ cse29@127.0.0.1:/home/cse29/
 ```
 
-If you are a Mac user using **UTM**, specify port **22** instead of **2222**:
+If you are a Mac user using **UTM** and port `2222` fails, try port **22**:
 
 ```bash
 ssh -p 22 cse29@localhost
@@ -49,9 +70,6 @@ scp -P 22 -r /path/to/files/ cse29@127.0.0.1:/home/cse29/
 
 You can also use **VS Code** to connect to the VM via SSH — see the
 [Microsoft Remote SSH docs](https://code.visualstudio.com/docs/remote/ssh).
-JetBrains IDEs have a similar feature; see their docs (setup is a bit harder).
-
-**Quick reminder**
 
 | Tool | Purpose |
 |------|---------|
@@ -60,38 +78,24 @@ JetBrains IDEs have a similar feature; see their docs (setup is a bit harder).
 
 ---
 
-## Download the starter code (inside the VM)
-
-With the VM running, open a terminal **inside the VM** (or SSH in) and run:
+## Build and run Level 1
 
 ```bash
-cd ~
-wget -O cse29-lab.tar.gz https://github.com/Kingnawab/lab_SRP_2026/archive/refs/tags/v0.1.0.tar.gz
-tar -xf cse29-lab.tar.gz
-mv lab_SRP_2026-0.1.0 cse29-lab
-cd cse29-lab
-ls
-```
-
-You should see:
-
-```text
-level1_grade/  level2_role/  level3_nopsled/  check-env.sh  setup-perms.sh  ...
-```
-
-Then:
-
-```bash
-cd level1_grade
+cd ~/cse29-lab/level1_grade
 make
 file vulnerable
+# must say: ELF 32-bit LSB executable, Intel 80386
 ./vulnerable
 ```
 
 **Read the compiler warnings** when you `make` — that is part of the lab.
 
-**Starter download link:**  
-https://github.com/Kingnawab/lab_SRP_2026/archive/refs/tags/v0.1.0.tar.gz
+Then follow each level’s `README.md`. Typical payload pattern:
+
+```bash
+python3 solve.py | ./vulnerable
+# or a one-liner from the level README
+```
 
 ---
 
@@ -103,22 +107,34 @@ https://github.com/Kingnawab/lab_SRP_2026/archive/refs/tags/v0.1.0.tar.gz
 | 2 | `level2_role/` | Control flow: student → professor |
 | 3 | `level3_nopsled/` | NOP sled + shellcode → root shell |
 
-You log into the VM as a normal user. A **root shell** is only after a
-successful Level 3 exploit (on the course VM, Level 3 is set up as setuid-root).
+---
+
+## Optional: refresh starter from GitHub
+
+Only if your instructor says to re-download (e.g. after a mid-quarter patch):
+
+```bash
+cd ~
+wget -O cse29-lab.tar.gz https://github.com/Kingnawab/lab_SRP_2026/archive/refs/tags/v0.1.0.tar.gz
+tar -xf cse29-lab.tar.gz
+mv lab_SRP_2026-0.1.0 cse29-lab
+cd cse29-lab
+```
 
 ---
 
-## Instructor notes (building the VM image)
+## Instructor notes
 
-1. Build a 32-bit Debian (i386) VM; create user `cse29` / `cse29`.
-2. Install `build-essential`, `gdb`, `python3`, `wget`, `openssh-server`.
-3. Disable ASLR: `kernel.randomize_va_space = 0` (sysctl.d).
-4. Students fetch starter code with `wget` from the `v0.1.0` tag archive
-   (link above). When you change the lab, cut a new tag (e.g. `v0.2.0`) and
-   update the student `wget` URL.
-5. On the course VM image, after Level 3 is built: run `setup-perms.sh` so only
-   Level 3 `vulnerable` is setuid-root.
-6. Port forward: VirtualBox host `2222` → guest `22`; document UTM as port `22`.
-7. Export `.ova` / `.utm.zip` and post download links on Canvas.
+**Build the images with the click-by-click checklist:**  
+[`INSTRUCTOR_VM_CHECKLIST.md`](./INSTRUCTOR_VM_CHECKLIST.md)
 
-Keep `SOLUTION.md` / `solution.py` out of the public repo.
+Summary:
+
+1. UTM → Emulate → Ubuntu Server **22.04 64-bit** (not a native i386 ISO).
+2. User `cse29` / `cse29`; install `gcc-multilib`, i386 libs, `gdb`, `python3`, SSH.
+3. ASLR off permanently; bake `~/cse29-lab`; Makefiles use `-m32` (`-z execstack` only on Level 3).
+4. `sudo ./setup-perms.sh` so only Level 3 is setuid-root.
+5. Export and post on Canvas:
+   - **`CSE29-Overflow-Lab-utm.zip`**
+   - **`CSE29-Overflow-Lab.ova`**
+6. Keep `SOLUTION.md` / `solution.py` out of the VM and public repo.
