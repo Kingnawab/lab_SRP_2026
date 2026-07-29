@@ -52,9 +52,6 @@ void vulnerable(void) {
     printf(COLOR_DIM "  Logged in as : student\n" COLOR_RESET);
     printf(COLOR_DIM "  [hint] professor_mode @ %p\n" COLOR_RESET,
            (void *)professor_mode);
-    printf(COLOR_MAGENTA_BOLD "  root@cse29:~# " COLOR_RESET
-           "enter exploit payload: ");
-    fflush(stdout);
     gets(buffer); /* intentionally unsafe */
 }
 

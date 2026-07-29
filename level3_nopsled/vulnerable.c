@@ -44,9 +44,6 @@ void vulnerable(void) {
     char buffer[128];
 
     printf(COLOR_DIM "  [leak] buffer @ %p\n" COLOR_RESET, (void *)buffer);
-    printf(COLOR_MAGENTA_BOLD "  root@cse29:~# " COLOR_RESET
-           "enter exploit payload: ");
-    fflush(stdout);
     gets(buffer); /* intentionally unsafe */
 }
 

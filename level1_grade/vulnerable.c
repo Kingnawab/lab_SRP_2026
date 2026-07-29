@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 #define COLOR_GREEN_BOLD   "\033[1;32m"
-#define COLOR_MAGENTA_BOLD "\033[1;35m"
 #define COLOR_DIM          "\033[2m"
 #define COLOR_RESET        "\033[0m"
 
@@ -23,8 +22,6 @@ int main(void) {
     student.grade[1] = '\0';
 
     printf("  grade  : %s\n", student.grade);
-    printf(COLOR_MAGENTA_BOLD "  root@cse29:~# " COLOR_RESET "enter your ucsd email without the @: ");
-    fflush(stdout);
     gets(student.name); /* depricated function */
 
     printf("\n  user   : %s\n", student.name);
