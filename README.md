@@ -22,10 +22,13 @@ Download the file that matches your computer from **Canvas** (course Files / lab
 
 *(Instructors: upload those two files to Canvas and replace any placeholder links below.)*
 
-- *(paste Canvas URL for `CSE29-Overflow-Lab.ova`)*
-- *(paste Canvas URL for `CSE29-Overflow-Lab-utm.zip`)*
+**Built locally (ready to upload):**
 
-Instructors: the built images live in the research repo under `labs/vm-build/` until uploaded to Canvas.
+- `labs/vm-build/CSE29-Overflow-Lab-utm.zip` (~1.3 GB)
+- `labs/vm-build/CSE29-Overflow-Lab.ova` (~1.3 GB)
+
+- Canvas (OVA): *(paste Canvas URL for `CSE29-Overflow-Lab.ova`)*
+- Canvas (UTM zip): *(paste Canvas URL for `CSE29-Overflow-Lab-utm.zip`)*
 
 ### 2. Log in
 
@@ -115,9 +118,9 @@ Only if your instructor says to re-download (e.g. after a mid-quarter patch):
 
 ```bash
 cd ~
-wget -O cse29-lab.tar.gz https://github.com/Kingnawab/lab_SRP_2026/archive/refs/tags/v0.1.3.tar.gz
+wget -O cse29-lab.tar.gz https://github.com/Kingnawab/lab_SRP_2026/archive/refs/tags/v0.1.4.tar.gz
 tar -xf cse29-lab.tar.gz
-mv lab_SRP_2026-0.1.3 cse29-lab
+mv lab_SRP_2026-0.1.4 cse29-lab
 cd cse29-lab
 ```
 

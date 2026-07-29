@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Animated hacker-style intro for Level 1.
+# Animated hacker-style intro for Level 3.
 # Usage:  ./intro.sh
 
 COLOR_GREEN_BOLD=$'\033[1;32m'
@@ -8,7 +8,6 @@ COLOR_CYAN=$'\033[0;36m'
 COLOR_DIM=$'\033[2m'
 COLOR_RESET=$'\033[0m'
 
-# typewriter: print text one char at a time
 type_out() {
   local text="$1" delay="${2:-0.02}"
   for (( i=0; i<${#text}; i++ )); do
@@ -29,25 +28,29 @@ cat <<'ART'
 ART
 printf '%s\n' "$COLOR_RESET"
 sleep 0.3
-printf '%s        [ CSE 29 :: GRADE OVERRIDE TERMINAL ]%s\n\n' "$COLOR_MAGENTA_BOLD" "$COLOR_RESET"
+printf '%s        [ CSE 29 :: LEVEL 3 :: NOP SLED → ROOT SHELL ]%s\n\n' "$COLOR_MAGENTA_BOLD" "$COLOR_RESET"
 sleep 0.4
 
 printf '%s' "$COLOR_CYAN"
-type_out "  > establishing connection to grade server......... ok" 0.015
-type_out "  > bypassing auth............................. bypassed" 0.015
+type_out "  > mapping stack buffer......................... ok" 0.015
+type_out "  > loading shellcode from shellcode.py.......... armed" 0.015
 printf '%s\n' "$COLOR_RESET"
 sleep 0.2
 
 printf '%s' "$COLOR_GREEN_BOLD"
-type_out "  psst... I heard you want to hack into the CSE 29 course files."
-type_out "  How about we change your score to be devious..."
+type_out "  psst... Level 2 hit one exact function. Level 3 injects your own code."
+type_out "  Build a NOP runway, slide into shellcode, and become root."
 printf '%s\n' "$COLOR_RESET"
 sleep 0.2
 
 printf '%s' "$COLOR_CYAN"
-type_out "  MISSION: your grade is locked at 'D'."
-type_out "  The 'grade' field sits right after the 'name' buffer in memory."
-type_out "  Overflow 'name', spill into 'grade', and set yourself an 'A+'."
+type_out "  MISSION: overwrite the return address into a NOP sled (\\x90)."
+type_out "  Slide into shellcode.py (setuid + /bin/sh) and get a root shell."
+type_out "  Try two different landings in the sled — both should work."
+printf '%s\n' "$COLOR_RESET"
+
+printf '%s' "$COLOR_DIM"
+printf '  ---------------------------------------------------------\n'
 printf '%s\n' "$COLOR_RESET"
 
 printf '\n%s  Good luck, hacker.%s\n\n' "$COLOR_GREEN_BOLD" "$COLOR_RESET"

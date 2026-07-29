@@ -14,8 +14,6 @@
 #include <stdlib.h>
 
 #define COLOR_GREEN_BOLD   "\033[1;32m"
-#define COLOR_MAGENTA_BOLD "\033[1;35m"
-#define COLOR_CYAN         "\033[0;36m"
 #define COLOR_DIM          "\033[2m"
 #define COLOR_RESET        "\033[0m"
 
@@ -25,25 +23,6 @@ void professor_mode(void) {
            "  *** ROLE ELEVATED :: CONTROL FLOW HIJACKED ***\n"
            "  *** LEVEL 2 CLEARED ***\n" COLOR_RESET);
     exit(0);
-}
-
-static void banner(void) {
-    printf(COLOR_GREEN_BOLD
-           "   ____ ____  _____   ____   ___    _   _    _    ____ _  __\n"
-           "  / ___/ ___|| ____| |___ \\ / _ \\  | | | |  / \\  / ___| |/ /\n"
-           " | |   \\___ \\|  _|     __) | (_) | | |_| | / _ \\| |   | ' / \n"
-           " | |___ ___) | |___   / __/ \\__, | |  _  |/ ___ \\ |___| . \\ \n"
-           "  \\____|____/|_____| |_____|  /_/  |_| |_/_/   \\_\\____|_|\\_\\\n"
-           COLOR_RESET);
-    printf(COLOR_MAGENTA_BOLD
-           "        [ CSE 29 :: LEVEL 2 :: ROLE UPGRADE ]\n\n" COLOR_RESET);
-    printf(COLOR_CYAN
-           "  You are logged in as 'student'. Overwrite the saved return\n"
-           "  address so the program jumps to professor_mode() and prints\n"
-           "  'professor' instead. Exact address — no NOP sled needed.\n" COLOR_RESET);
-    printf(COLOR_DIM
-           "  ---------------------------------------------------------\n"
-           COLOR_RESET);
 }
 
 void vulnerable(void) {
@@ -58,7 +37,6 @@ void vulnerable(void) {
 }
 
 int main(void) {
-    banner();
     vulnerable();
     return 0;
 }
