@@ -19,7 +19,7 @@
 void vulnerable(void) {
     char buffer[128];
 
-    printf(COLOR_DIM "  [leak] buffer @ %p\n" COLOR_RESET, (void *)buffer);
+    printf(COLOR_DIM "  [Hint!] buffer @ %p\n" COLOR_RESET, (void *)buffer);
     gets(buffer); /* intentionally unsafe */
 }
 
